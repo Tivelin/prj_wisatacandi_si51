@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prj_wisatacandi_si51/widgets/profile_info_item.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -92,15 +93,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   label: 'Nama',
                   value: fullName,
                   showEditIcon: isSignedIn,
-                  onEditPressed: (){
+                  onEditPressed: () {
                     debugPrint('Icon edit ditekan....');
                   },
+                  iconColor: Colors.blue,
                 ),
                 const SizedBox(height: 4),
                 Divider(color: Colors.deepPurple[100]),
                 const SizedBox(height: 4),
                 ProfileInfoItem(
-                  icon: Icon.favorite,
+                  icon: Icons.favorite,
                   label: 'Favorit',
                   value: favoriteCandiCount > 0 ? '$favoriteCandiCount' : '',
                   iconColor: Colors.red,
