@@ -8,7 +8,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // TODO: 1.Dekalrasikan variabel yang dibutuhkan
+  // TODO: 1.Deklarasi kan variabel yang dibutuhkan
   bool isSignedIn = false;
   String fullName = '';
   String userName = '';
@@ -78,106 +78,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 20),
                 Divider(color: Colors.deepPurple[100]),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 3,
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.lock,
-                            color: Colors.amber,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Pengguna',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        ': $userName',
-                        style: const TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ],
+                ProfileInfoItem(
+                  icon: Icons.lock,
+                  label: 'Pengguna',
+                  value: userName,
+                  iconColor: Colors.amber,
                 ),
                 const SizedBox(height: 4),
                 Divider(color: Colors.deepPurple[100]),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 3,
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color: Colors.blue,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Nama',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        ': $fullName',
-                        style: const TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    if (isSignedIn) const Icon(Icons.edit),
-                  ],
+                ProfileInfoItem(
+                  icon: Icons.person,
+                  label: 'Nama',
+                  value: fullName,
+                  showEditIcon: isSignedIn,
+                  onEditPressed: (){
+                    debugPrint('Icon edit ditekan....');
+                  },
                 ),
                 const SizedBox(height: 4),
                 Divider(color: Colors.deepPurple[100]),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 3,
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Favorite',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        ': $favoriteCandiCount',
-                        style: const TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    if (isSignedIn) const Icon(Icons.edit),
-                  ],
+                ProfileInfoItem(
+                  icon: Icon.favorite,
+                  label: 'Favorit',
+                  value: favoriteCandiCount > 0 ? '$favoriteCandiCount' : '',
+                  iconColor: Colors.red,
                 ),
                 // TODO: 4. Buat profile Actions yang berisi Textbutton sign in/out
                 const SizedBox(height: 4),
