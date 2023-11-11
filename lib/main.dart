@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prj_wisatacandi_si51/widgets/signup_screen.dart';
+import 'package:prj_wisatacandi_si51/screens/search_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +28,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home : const SignUpScreen(),
+      home: const SearchScreen(),
+      //home : const SignUpScreen(),
       //home: const SignInScreen(),
       //home: const ProfileScreen(),
       // home: DetailScreen(candi: candiList[0]),
