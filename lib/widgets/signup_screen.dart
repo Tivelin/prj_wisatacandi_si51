@@ -1,28 +1,29 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
-  // TODO: 1. Deklarasikan Variabel
+class _SignUpScreenState extends State<SignUpScreen> {
+  // TODO: 1. Deklarasi Variabel
+  final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   final String _errorText = '';
-  final bool _isSignedIn = false;
+  final bool _isSignedUp = false;
   bool _obscurePassword = true;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // TODO: 2. Pasang Appbar
       appBar: AppBar(
-        title: const Text('Sign In'),
+        title: const Text('Sign Up'),
       ),
       // TODO: 3. Pasang Body
       body: Center(
@@ -31,11 +32,22 @@ class _SignInScreenState extends State<SignInScreen> {
             padding: const EdgeInsets.all(16),
             child: Form(
               child: Column(
-                // TODO: 4. Atur mainAxisAlignment dan CrossAxisAlignment
+                // TODO : 4. Atur mainAxisAlignment dan CrossAxisAlignment
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // TODO: 5. Pasang TextForeField Nama Pengguna
+                  // TODO: 5. Pasang TextForeField Nama Lengkap
+                  TextFormField(
+                    controller: _fullnameController,
+                    decoration: const InputDecoration(
+                      labelText: "Nama Lengkap",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  // TODO: 6. Pasang TextForeField Nama Pengguna
                   TextFormField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
@@ -43,8 +55,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  // TODO: 6. Pasang TextForeField Kata Sandi
-                  const SizedBox(height: 20),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  // TODO: 7. Pasang textforefield Kata Sandi
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -66,27 +80,34 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     obscureText: _obscurePassword,
                   ),
-                  // TODO: 7. Pasang ElevatedButton Sign In
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  // TODO : 8. Pasang ElevatedButton Sign Up
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {},
-                    child: const Text('Sign In'),
+                    child: const Text('Sign Up'),
                   ),
-                  // TODO: 8. Pasang TextButton Sign Up
+                  //TODO : 9. Pasang TextButton Sign In
                   const SizedBox(height: 18),
                   RichText(
                     text: TextSpan(
-                      text: 'Belum punya akun?',
+                      text: 'Sudah punya akun?',
                       style: const TextStyle(
-                          fontSize: 16, color: Colors.deepPurple),
+                        fontSize: 16,
+                        color: Colors.deepPurple,
+                      ),
                       children: <TextSpan>[
                         TextSpan(
-                            text: 'Daftar di sini.',
-                            style: const TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                                fontSize: 16),
-                            recognizer: TapGestureRecognizer()..onTap = () {}),
+                          text: 'Sign In disini.',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                            fontSize: 16,
+                          ),
+                          recognizer: TapGestureRecognizer()..onTap = () {},
+                        ),
                       ],
                     ),
                   ),
