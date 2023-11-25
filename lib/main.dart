@@ -3,6 +3,7 @@ import 'package:prj_wisatacandi_si51/screens/favorite_screen.dart';
 import 'package:prj_wisatacandi_si51/screens/home_screen.dart';
 import 'package:prj_wisatacandi_si51/screens/search_screen.dart';
 import 'package:prj_wisatacandi_si51/widgets/profile_screen.dart';
+import 'package:prj_wisatacandi_si51/widgets/signup_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const SignUpScreen(),
     );
   }
 }

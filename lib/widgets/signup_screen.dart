@@ -1,5 +1,3 @@
-// ignore_for_file: unused_field
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -16,9 +14,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final String _errorText = '';
+  String _errorText = '';
   final bool _isSignedUp = false;
   bool _obscurePassword = true;
+
+  // TODO : 1. membuat metode _signUp
+
+  void _signUp() {
+    String fullname = _fullnameController.text.trim();
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (password.length < 8 ||
+        !password.contains(RegExp(r'[A-Z]')) ||
+        !password.contains(RegExp(r'[a-z]')) ||
+        !password.contains(RegExp(r'[0-9]')) ||
+        !password.contains(RegExp(r'[@#$%^&*(),.?":{}|<>]'))) {
+      setState(() {
+        _errorText =
+            'Password minimal 8 karakter, kombinasi [A-Z],[a-z],[0-9], [@#%^&*(),.?":{}|<>]';
+      });
+      return;
+    }
+    print('**Sign Up Berhasil**');
+    print('Nama : $fullname');
+    print('Nama Pengguna : $username');
+    print('Password : $password');
+  }
+
+  // TODO : 2. membuat metode dispose
+  void dispose() {
+    // TODO : implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // TODO: 5. Pasang TextForeField Nama Lengkap
+                  // TODO: 5. Pasang TextFormField Nama Lengkap
                   TextFormField(
                     controller: _fullnameController,
                     decoration: const InputDecoration(
@@ -49,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  // TODO: 6. Pasang TextForeField Nama Pengguna
+                  // TODO: 6. Pasang TextFormField Nama Pengguna
                   TextFormField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
@@ -60,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  // TODO: 7. Pasang textforefield Kata Sandi
+                  // TODO: 7. Pasang textformfield Kata Sandi
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -88,7 +116,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // TODO : 8. Pasang ElevatedButton Sign Up
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _signUp();
+                    },
                     child: const Text('Sign Up'),
                   ),
                   //TODO : 9. Pasang TextButton Sign In
@@ -102,7 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                          text: 'Sign In disini.',
+                          text: ' Sign In disini.',
                           style: const TextStyle(
                             color: Colors.blue,
                             decoration: TextDecoration.underline,
