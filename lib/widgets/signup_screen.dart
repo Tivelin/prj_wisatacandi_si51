@@ -1,5 +1,10 @@
+// ignore_for_file: unused_field, unused_local_variable, non_constant_identifier_names, unused_element, avoid_print, annotate_overrides
+
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,6 +18,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final Logger _logger = Logger();
+
+  //SignUpScreen({super.key});
 
   String _errorText = '';
   final bool _isSignedUp = false;
@@ -64,8 +72,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 // TODO : 4. Atur mainAxisAlignment dan CrossAxisAlignment
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
                   // TODO: 5. Pasang TextFormField Nama Lengkap
                   TextFormField(
                     controller: _fullnameController,
@@ -114,10 +122,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 20,
                   ),
                   // TODO : 8. Pasang ElevatedButton Sign Up
-                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _signUp();
+                      _performSignUp(context);
+                      //_signUp();
                     },
                     child: const Text('Sign Up'),
                   ),
@@ -149,6 +157,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
-    );
+    );    
   }
+  void _performSignUp(BuildContext context) {
+    try{
+      final prefs = SharedPreferences.getInstance();
+      _logger.d('Sign up attempt');
+      final String fullname = _fullnameController.text;
+      final String username = _usernameController.text;
+      final String password = _passwordController.text;
+
+      if(username.isNotEmpty && password.isNotEmpty){
+        final encrypt.Key key = encrypt.Key.fromLength(32);
+        final iv = encrypt.IV.fromLength(16);
+        final encrypter = encrypt.Encrypter(encrypt.AES(key));
+        final encryptedUsername = encrypter.encrypt(username, iv: iv);
+        final encryptedPassword = encrypter.encrypt(password, iv: iv);
+
+        _saveEncryptedDataToPrefs(
+          prefs,
+          encryptedUsername.base64,
+          encryptedPassword.base64,
+          key.base64,
+          iv.base64,
+        ).then((_) {
+          Navigator.pop(context);
+          _logger.d('Sign up succeeded');
+        });
+      }else{
+        _logger.e('Username or password cannot be empty');
+      }
+    } catch (e){
+      _logger.e('An Error Occured: $e');
+    }
+  }
+Future<void> _saveEncryptedDataToPrefs(
+    Future<SharedPreferences> prefs,
+    String encryptedUsername,
+    String encryptedPassword,
+    String keyString,
+    String ivString,
+    ) async {
+  final sharedPreferences = await prefs;
+  // Logging: menyimpan data pengguna ke SharedPreferences
+  _logger.d('Saving user data to SharedPreferences');
+  await sharedPreferences.setString('username', encryptedUsername);
+  await sharedPreferences.setString('password', encryptedPassword);
+  await sharedPreferences.setString('key', keyString);
+  await sharedPreferences.setString('iv', ivString);
+  }  
 }

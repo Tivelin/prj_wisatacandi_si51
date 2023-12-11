@@ -1,7 +1,11 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, unused_import
 
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:prj_wisatacandi_si51/widgets/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,11 +18,12 @@ class _SignInScreenState extends State<SignInScreen> {
   // TODO: 1. Deklarasikan Variabel
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final Logger _logger = Logger();
 
   final String _errorText = '';
   final bool _isSignedIn = false;
   bool _obscurePassword = true;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,8 +40,8 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 // TODO: 4. Atur mainAxisAlignment dan CrossAxisAlignment
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
                   // TODO: 5. Pasang TextForeField Nama Pengguna
                   TextFormField(
                     controller: _usernameController,
@@ -71,10 +76,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   // TODO: 7. Pasang ElevatedButton Sign In
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _performSignIn(context);
+                    },
                     child: const Text('Sign In'),
                   ),
-                  // TODO: 8. Pasang TextButton Sign Up
+                  // TODO: 8. Pasang TextButton Sign In
                   const SizedBox(height: 18),
                   RichText(
                     text: TextSpan(
@@ -97,6 +104,72 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _performSignIn(BuildContext context) {
+    try {
+      final prefs = SharedPreferences.getInstance();
+      final String username = _usernameController.text;
+      final String password = _passwordController.text;
+      _logger.d('Sign in attempt');
+      if (username.isNotEmpty && password.isNotEmpty) {
+        _retrieveAndDecryptDataFromPrefs(prefs).then((data) {
+          if (data.isNotEmpty) {
+            final decryptedUsername = data['username'];
+            final decryptedPassword = data['password'];
+            if (username == decryptedUsername &&
+                password == decryptedPassword) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+              _logger.d('Sign in succeeded');
+            } else {
+              _logger.e('Username or password is incorrect');
+            }
+          } else {
+            _logger.e('No stored credentials found');
+          }
+        });
+      } else {
+        _logger.e('Username and password cannot be empty');
+      }
+    } catch (e) {
+      _logger.e('An error occurred: $e');
+    }
+  }
+
+  Future<Map<String, String>> _retrieveAndDecryptDataFromPrefs(
+    Future<SharedPreferences> prefs,
+  ) async {
+    final sharedPreferences = await prefs;
+    final encryptedUsername = sharedPreferences.getString('username') ?? '';
+    final encryptedPassword = sharedPreferences.getString('password') ?? '';
+    final keyString = sharedPreferences.getString('key') ?? '';
+    final ivString = sharedPreferences.getString('iv') ?? '';
+    final encrypt.Key key = encrypt.Key.fromBase64(keyString);
+    final iv = encrypt.IV.fromBase64(ivString);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+    final decryptedUsername = encrypter.decrypt64(encryptedUsername, iv: iv);
+    final decryptedPassword = encrypter.decrypt64(encryptedPassword, iv: iv);
+    // Mengembalikan data terdekripsi
+    return {'username': decryptedUsername, 'password': decryptedPassword};
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: const Center(
+        child: Text('Welcome!'),
       ),
     );
   }

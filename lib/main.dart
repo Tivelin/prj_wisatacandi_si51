@@ -1,9 +1,14 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:prj_wisatacandi_si51/screens/favorite_screen.dart';
 import 'package:prj_wisatacandi_si51/screens/home_screen.dart';
 import 'package:prj_wisatacandi_si51/screens/search_screen.dart';
 import 'package:prj_wisatacandi_si51/widgets/profile_screen.dart';
-import 'package:prj_wisatacandi_si51/widgets/signup_screen.dart';
+import 'package:prj_wisatacandi_si51/widgets/signin_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Wisata Candi',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
@@ -32,7 +38,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const SignUpScreen(),
+      home: SignInScreen(),
     );
   }
 }
