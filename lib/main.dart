@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: SignInScreen(),
+      home: const SignInScreen(),
     );
   }
 }
@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
   // TODO : 1. deklarasikan variabel
   int _currentIndex = 0;
   final List<Widget> _children = [
-    const HomeScreen(),
+    //const HomeScreen(),
     const SearchScreen(),
     const FavoriteScreen(),
     const ProfileScreen(),

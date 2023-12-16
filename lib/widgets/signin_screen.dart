@@ -20,8 +20,8 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final Logger _logger = Logger();
 
-  final String _errorText = '';
-  final bool _isSignedIn = false;
+  String _errorText = '';
+  bool _isSignedIn = false;
   bool _obscurePassword = true;
 
   @override
@@ -77,7 +77,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      _performSignIn(context);
+                      _performSignIn();
                     },
                     child: const Text('Sign In'),
                   ),
@@ -108,23 +108,33 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _performSignIn(BuildContext context) {
+  Future<void> _performSignIn() async {
     try {
-      final prefs = SharedPreferences.getInstance();
+      final Future<SharedPreferences> prefsFuture =
+      SharedPreferences.getInstance();
+
       final String username = _usernameController.text;
       final String password = _passwordController.text;
       _logger.d('Sign in attempt');
+
       if (username.isNotEmpty && password.isNotEmpty) {
-        _retrieveAndDecryptDataFromPrefs(prefs).then((data) {
+        final SharedPreferences prefs = await prefsFuture;
+        final data = await _retrieveAndDecryptDataFromPrefs(prefs as Future<SharedPreferences>);
           if (data.isNotEmpty) {
             final decryptedUsername = data['username'];
             final decryptedPassword = data['password'];
+            
             if (username == decryptedUsername &&
                 password == decryptedPassword) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
+                _errorText = '';
+                _isSignedIn = true;
+                prefs.setBool('isSignedIn', true);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                });
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacementNamed(context, '/');
+                });
               _logger.d('Sign in succeeded');
             } else {
               _logger.e('Username or password is incorrect');
@@ -132,7 +142,6 @@ class _SignInScreenState extends State<SignInScreen> {
           } else {
             _logger.e('No stored credentials found');
           }
-        });
       } else {
         _logger.e('Username and password cannot be empty');
       }
@@ -149,11 +158,14 @@ class _SignInScreenState extends State<SignInScreen> {
     final encryptedPassword = sharedPreferences.getString('password') ?? '';
     final keyString = sharedPreferences.getString('key') ?? '';
     final ivString = sharedPreferences.getString('iv') ?? '';
+
     final encrypt.Key key = encrypt.Key.fromBase64(keyString);
     final iv = encrypt.IV.fromBase64(ivString);
+
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final decryptedUsername = encrypter.decrypt64(encryptedUsername, iv: iv);
     final decryptedPassword = encrypter.decrypt64(encryptedPassword, iv: iv);
+
     // Mengembalikan data terdekripsi
     return {'username': decryptedUsername, 'password': decryptedPassword};
   }

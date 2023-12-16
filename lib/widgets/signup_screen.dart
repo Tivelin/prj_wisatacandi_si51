@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, unused_local_variable, non_constant_identifier_names, unused_element, avoid_print, annotate_overrides
+// ignore_for_file: unused_field, unused_local_variable, non_constant_identifier_names, unused_element, avoid_print, annotate_overrides, prefer_typing_uninitialized_variables
 
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/gestures.dart';
@@ -44,10 +44,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
       return;
     }
-    print('**Sign Up Berhasil**');
-    print('Nama : $fullname');
-    print('Nama Pengguna : $username');
-    print('Password : $password');
+    //TODO : 3. Jika, name, username, password tidak kosong lakukan enkripsi
+    if (fullname.isNotEmpty && username.isNotEmpty && password.isNotEmpty) {
+      final encrypt.Key key = encrypt.Key.fromLength(32);
+      final iv = encrypt.IV.fromLength(16);
+
+      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      final encryptedFullname = encrypter.encrypt(fullname, iv: iv);
+      final encryptedUsername = encrypter.encrypt(username, iv: iv);
+      final encryptedPassword = encrypter.encrypt(password, iv: iv);
+
+      var prefs;
+      prefs.setString('fullname', encryptedFullname.base64);
+      prefs.setString('username', encryptedUsername.base64);
+      prefs.setstring('password', encryptedPassword.base64);
+      prefs.setString('key', key.base64);
+      prefs.setString('iv', iv.base64);
+    }
   }
 
   // TODO : 2. membuat metode dispose
@@ -157,17 +170,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
-    );    
+    );
   }
+
   void _performSignUp(BuildContext context) {
-    try{
+    try {
       final prefs = SharedPreferences.getInstance();
       _logger.d('Sign up attempt');
       final String fullname = _fullnameController.text;
       final String username = _usernameController.text;
       final String password = _passwordController.text;
 
-      if(username.isNotEmpty && password.isNotEmpty){
+      if (username.isNotEmpty && password.isNotEmpty) {
         final encrypt.Key key = encrypt.Key.fromLength(32);
         final iv = encrypt.IV.fromLength(16);
         final encrypter = encrypt.Encrypter(encrypt.AES(key));
@@ -184,26 +198,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Navigator.pop(context);
           _logger.d('Sign up succeeded');
         });
-      }else{
+      } else {
         _logger.e('Username or password cannot be empty');
       }
-    } catch (e){
+    } catch (e) {
       _logger.e('An Error Occured: $e');
     }
   }
-Future<void> _saveEncryptedDataToPrefs(
+
+  Future<void> _saveEncryptedDataToPrefs(
     Future<SharedPreferences> prefs,
     String encryptedUsername,
     String encryptedPassword,
     String keyString,
     String ivString,
-    ) async {
-  final sharedPreferences = await prefs;
-  // Logging: menyimpan data pengguna ke SharedPreferences
-  _logger.d('Saving user data to SharedPreferences');
-  await sharedPreferences.setString('username', encryptedUsername);
-  await sharedPreferences.setString('password', encryptedPassword);
-  await sharedPreferences.setString('key', keyString);
-  await sharedPreferences.setString('iv', ivString);
-  }  
+  ) async {
+    final sharedPreferences = await prefs;
+    // Logging: menyimpan data pengguna ke SharedPreferences
+    _logger.d('Saving user data to SharedPreferences');
+    await sharedPreferences.setString('username', encryptedUsername);
+    await sharedPreferences.setString('password', encryptedPassword);
+    await sharedPreferences.setString('key', keyString);
+    await sharedPreferences.setString('iv', ivString);
+  }
 }
